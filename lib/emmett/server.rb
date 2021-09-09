@@ -28,6 +28,8 @@ module Emmett
         @config     = Emmett.reload_config
         @converter  = Converter.new(@config)
 
+        @converter.pretty_print
+
         view('index')
       end
     end

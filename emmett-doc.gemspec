@@ -32,4 +32,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'tilt'
   spec.add_dependency 'erubi'
   spec.add_dependency 'sassc'
+  spec.add_dependency 'rouge'
+  spec.add_dependency 'redcarpet'
 end
