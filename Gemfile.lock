@@ -1,0 +1,39 @@
+PATH
+  remote: .
+  specs:
+    emmett-doc (0.1.0)
+      erubi
+      puma
+      roda
+      sassc
+      tilt
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    benchmark-ips (2.9.1)
+    erubi (1.10.0)
+    ffi (1.15.4)
+    minitest (5.14.4)
+    nio4r (2.5.8)
+    puma (5.4.0)
+      nio4r (~> 2.0)
+    rack (2.2.3)
+    rake (12.3.3)
+    roda (3.47.0)
+      rack
+    sassc (2.4.0)
+      ffi (~> 1.9)
+    tilt (2.0.10)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  benchmark-ips
+  emmett-doc!
+  minitest (~> 5.0)
+  rake (~> 12.0)
+
+BUNDLED WITH
+   2.1.4
