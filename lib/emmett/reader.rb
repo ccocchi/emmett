@@ -2,16 +2,18 @@ require 'emmett/content_parser'
 
 module Emmett
   class Reader
+    attr_reader :current_resource
+
+    def initialize
+      @current_resource = nil
+    end
+
     def visit(o)
       name = o.class.name.split('::').last
       send("visit_#{name}", o)
     end
 
     private
-
-    def visit_Resource(n)
-      n.children.each { |c| visit(c) }
-    end
 
     def visit_ResourcesGroup(n)
       # path = n.path
@@ -23,6 +25,13 @@ module Emmett
 
 
       # n.ts = time
+    end
+
+    def visit_Resource(n)
+      @current_resource = n.name
+      n.children.each { |c| visit(c) }
+    ensure
+      @current_resource = nil
     end
 
     def visit_Section(n)
@@ -46,6 +55,7 @@ module Emmett
 
       n.content, n.example = raw_content.split('$$$').map! { |c| Emmett::ContentParser.to_html(c) }
       n.ts = file.mtime
+      n.set_identifier(current_resource)
     end
 
     def parse_metadata(hash)
