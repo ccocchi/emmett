@@ -23,28 +23,28 @@ module Emmett
     private
 
     def visit_Resource(n)
-      out "Resource: path=#{n.path}"
+      out "Resource: path=#{n.path} name=#{n.name}"
       indenting {
         n.children.each { |c| visit(c) }
       }
     end
 
     def visit_ResourcesGroup(n)
-      out "ResourceGroup: path=#{n.path}"
+      out "ResourceGroup: path=#{n.path} name=#{n.name}"
       indenting {
         n.children.each { |c| visit(c) }
       }
     end
 
     def visit_Section(n)
-      out "Section: path=#{n.path}"
+      out "Section: path=#{n.path} name=#{n.name}"
       indenting {
         n.children.each { |c| visit(c) }
       }
     end
 
     def visit_Leaf(n)
-      out "Leaf: path=#{n.filename}"
+      out "Leaf: path=#{n.path} name=#{n.name}"
     end
   end
 end

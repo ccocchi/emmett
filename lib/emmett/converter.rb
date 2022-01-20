@@ -1,4 +1,6 @@
-require 'emmett/reader'
+require "emmett/visitors/core"
+require "emmett/visitors/reader"
+require "emmett/normalizer"
 
 module Emmett
   class Converter
@@ -24,9 +26,12 @@ module Emmett
       attr_reader :filename
       attr_accessor :metadata, :content, :example, :ts
 
-      # TODO: maybe add a name there?
       def initialize(filename)
         @filename = filename
+      end
+
+      def name
+        @name ||= @filename.slice(0, -4)
       end
 
       def menu_output
@@ -42,7 +47,7 @@ module Emmett
       end
 
       def set_identifier(parent_resource = nil)
-        _id = metadata['id']
+        _id = metadata&.[]("id") || name
         @id = parent_resource ? "#{parent_resource}-#{_id}" : _id
       end
 
@@ -79,7 +84,7 @@ module Emmett
       include Anchorable
 
       attr_reader :name, :path, :children
-      attr_accessor :ts
+      attr_accessor :ts, :desc_node, :object_node, :children
 
       def initialize(path, children)
         @path = path
@@ -138,7 +143,7 @@ module Emmett
       end
 
       def signatures_output
-        signatures = children.map |leaf|
+        signatures = children.map do |leaf|
           %(<div class="resource-sig">#{leaf.signature}</div>)
         end.join
 
@@ -167,10 +172,24 @@ module Emmett
       build_tree if @config.changed?
     end
 
-    def read_markdown
+    def read_files
+      visitor = Visitors::Reader.new
+      self.class.tree.each { |n| n.accept(visitor) }
+    end
+
+    def menu_output
+      self.class.tree.map(&:menu_output).join
+    end
+
+    def normalize_tree
+      visitor = Normalizer.new
+      self.class.tree.each { |n| n.accept(visitor) }
+    end
+
+    def to_html
       visitor = Reader.new
-      byebug
-      # self.class.tree.each { |n| n.accept(visitor) }
+      self.class.tree.each { |n| n.accept(visitor) }
+      visitor.result
     end
 
     def pretty_print
@@ -184,35 +203,37 @@ module Emmett
     def build_tree
       self.class.tree = @files.map do |f|
         if f.is_a?(String)
-          Leaf.new(File.join(@content_dir, "#{f}.md"))
+          Nodes::Leaf.new(File.join(@content_dir, "#{f}.md"), f)
         else
-          dir = File.join(@content_dir, f['name'])
-          traverse_directory(dir, type: f['type'])
+          dir = File.join(@content_dir, f["name"])
+          traverse_directory(dir, name: f["name"], type: f["type"])
         end
       end
+
+      # normalize_tree
     end
 
-    def traverse_directory(dir, type:)
+    def traverse_directory(dir, name:, type:)
       children = Dir.each_child(dir).map do |filename|
-        path = File.join(dir, filename)
+        path  = File.join(dir, filename)
 
         if File.directory?(path)
-          traverse_directory(path, type: determine_type_from_current(type))
+          traverse_directory(path, name: filename, type: determine_type_from_current(type))
         else
-          Leaf.new(path)
+          Nodes::Leaf.new(path, filename.slice(0..-4))
         end
       end
 
-      class_from_type(type).new(dir, children)
+      class_from_type(type).new(dir, name, children)
     end
 
     # Manual constantize
     #
     def class_from_type(type)
       case type
-      when "resources_group" then ResourcesGroup
-      when "resource" then Resource
-      when "section" then Section
+      when "resources_group" then Nodes::ResourcesGroup
+      when "resource" then Nodes::Resource
+      when "section" then Nodes::Section
       end
     end
 

@@ -3,6 +3,8 @@ require 'redcarpet'
 
 module Emmett
   module ContentParser
+    CONTENT_EXAMPLE_SEP = '$$$'
+
     class Renderer < Redcarpet::Render::Base
       attr_reader :rouge_formatter, :rouge_lexer
 
@@ -133,6 +135,10 @@ module Emmett
       no_intra_emphasis:    true,
       tables:               true
     })
+
+    def self.parse(raw)
+      raw.split(CONTENT_EXAMPLE_SEP, 2).map! { |c| to_html(c) }
+    end
 
     def self.to_html(text)
       @@renderer.render(text)

@@ -29,6 +29,7 @@ module Emmett
         @converter  = Converter.new(@config)
 
         @converter.pretty_print
+        @converter.read_files
 
         view('index')
       end
