@@ -1,6 +1,8 @@
 module Emmett
   module Nodes
     class Resource < Simple
+      attr_accessor :desc
+
       def menu_output
         # TODO: we should use desc here instead
         head, *tail = children
@@ -15,6 +17,13 @@ module Emmett
             <ul>#{children.map(&:menu_output).join}</ul>
           </li>
         HTML
+      end
+
+      def output
+        inner = children.map(&:output)
+        inner.unshift(desc.output)
+
+        %(<section class="head-section">#{inner.join("\n")}</section>)
       end
     end
   end

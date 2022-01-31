@@ -11,6 +11,10 @@ module Emmett::Visitors
 
     private
 
+    def visit_Root(n)
+      n.children.each { |c| visit(c) }
+    end
+
     def visit_ResourcesGroup(n)
       n.children.each { |c| visit(c) }
     end

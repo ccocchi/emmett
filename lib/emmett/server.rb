@@ -2,9 +2,6 @@ require "roda"
 require "tilt"
 require "tilt/erubi"
 
-require "emmett/config"
-require "emmett/converter"
-
 module Emmett
   class Server < Roda
     plugin :render, views: 'src/views', layout: false
@@ -25,11 +22,12 @@ module Emmett
       r.assets
 
       r.root do
-        @config     = Emmett.reload_config
-        @converter  = Converter.new(@config)
+        @config = Emmett.config
+        @tree = Emmett.tree
+        @tree.refresh
 
-        @converter.pretty_print
-        @converter.read_files
+        # @tree.menu_output
+        # @tree.output
 
         view('index')
       end

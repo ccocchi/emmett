@@ -1,12 +1,11 @@
 module Emmett
   module Nodes
-    class Leaf < Simple
-      attr_accessor :metadata, :content, :example
-      attr_accessor :resource
+    class Desc
+      attr_reader :content, :resource
 
-      def menu_output
-        menu_title = metadata&.[]("menu_title") || name
-        "<li><a><span>#{menu_title}</span></a></li>"
+      def initialize(resource, content = nil)
+        @resource = resource
+        @content = content || "<h1>#{resource_name.capitalize}</h1>"
       end
 
       template = Erubi::Engine.new(File.read('src/views/section.erb'))
@@ -14,12 +13,16 @@ module Emmett
         define_method(:output) { #{template.src} }
       RUBY
 
-      def main_section?
-        false
+      def anchor_id
+        "#{resource_name}-desc"
       end
 
-      def anchor_id
-        resource ? "#{resource.name}-#{name}" : name
+      def main_section?
+        true
+      end
+
+      def resource_name
+        @resource.name
       end
 
       def html_content
@@ -27,7 +30,6 @@ module Emmett
       end
 
       def html_example
-        example
       end
     end
   end

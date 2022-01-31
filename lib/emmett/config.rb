@@ -3,19 +3,14 @@ require 'yaml'
 module Emmett
   class Config
     def initialize(config_path)
-      @path = config_path
+      @path     = config_path
+      @changed  = false
+
       load
     end
 
     def changed?
       @changed
-    end
-
-    def load
-      file = File.open(@path)
-      @raw = YAML.load(file.read)
-      @ts = file.mtime
-      @changed = true
     end
 
     def reload
@@ -34,6 +29,14 @@ module Emmett
       define_method(meth) do
         @raw[meth]
       end
+    end
+
+    private
+
+    def load
+      file = File.open(@path)
+      @raw = YAML.load(file.read)
+      @ts = file.mtime
     end
   end
 end

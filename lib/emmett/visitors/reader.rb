@@ -13,7 +13,7 @@ module Emmett::Visitors
     private
 
     def visit_Resource(n)
-      @current_resource = n.name
+      @current_resource = n
       super
     ensure
       @current_resource = nil
@@ -36,6 +36,7 @@ module Emmett::Visitors
 
       n.content, n.example = ::Emmett::ContentParser.parse(raw_content)
       n.reset_cache(file.mtime)
+      n.resource = @current_resource
     end
 
     def parse_metadata(hash)
