@@ -1,6 +1,8 @@
 require "emmett/visitors/core"
 require "emmett/visitors/reader"
 require "emmett/visitors/normalizer"
+require "emmett/visitors/menu_output"
+require "emmett/visitors/content_output"
 
 module Emmett
   class Tree
@@ -31,16 +33,11 @@ module Emmett
     end
 
     def menu_output
-      self.class.tree.menu_output
+      self.class.tree.accept(Visitors::MenuOutput.new)
     end
 
     def output
-      self.class.tree.output
-    end
-
-    def normalize_tree
-      visitor = Normalizer.new
-      self.class.tree.each { |n| n.accept(visitor) }
+      self.class.tree.accept(Visitors::ContentOutput.new)
     end
 
     def pretty_print

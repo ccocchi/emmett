@@ -5,31 +5,11 @@ module Emmett
 
       def initialize(resource, content = nil)
         @resource = resource
-        @content = content || "<h1>#{resource_name.capitalize}</h1>"
+        @content = content || "<h1>#{resource.name.capitalize}</h1>"
       end
 
-      template = Erubi::Engine.new(File.read('src/views/section.erb'))
-      module_eval <<-RUBY
-        define_method(:output) { #{template.src} }
-      RUBY
-
-      def anchor_id
-        "#{resource_name}-desc"
-      end
-
-      def main_section?
-        true
-      end
-
-      def resource_name
-        @resource.name
-      end
-
-      def html_content
-        content
-      end
-
-      def html_example
+      def name
+        "desc"
       end
     end
   end

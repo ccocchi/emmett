@@ -11,6 +11,10 @@ module Emmett::Visitors
 
     private
 
+    def visit_Array(ary)
+      ary.map { |c| visit(c) }
+    end
+
     def visit_Root(n)
       n.children.each { |c| visit(c) }
     end
@@ -28,6 +32,9 @@ module Emmett::Visitors
     end
 
     def visit_Leaf(n)
+    end
+
+    def visit_Desc(n)
     end
   end
 end

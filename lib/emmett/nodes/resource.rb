@@ -1,30 +1,8 @@
 module Emmett
   module Nodes
     class Resource < Simple
+      attr_writer :children
       attr_accessor :desc
-
-      def menu_output
-        # TODO: we should use desc here instead
-        head, *tail = children
-        clean_name = name.tr('_', ' ').split.map!(&:capitalize).join(' ')
-
-        # TODO:
-        # #{head.anchor(clean_name, class_list: 'expandable')}
-
-        <<-HTML
-          <li data-anchor="#{clean_name}">
-            <a class="expandable" href="#"><span>#{clean_name}</span></a>
-            <ul>#{children.map(&:menu_output).join}</ul>
-          </li>
-        HTML
-      end
-
-      def output
-        inner = children.map(&:output)
-        inner.unshift(desc.output)
-
-        %(<section class="head-section">#{inner.join("\n")}</section>)
-      end
     end
   end
 end

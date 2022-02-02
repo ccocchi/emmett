@@ -37,6 +37,10 @@ module Emmett::Visitors
       n.content, n.example = ::Emmett::ContentParser.parse(raw_content)
       n.reset_cache(file.mtime)
       n.resource = @current_resource
+
+      if @current_resource && n.name == "desc"
+        @current_resource.desc = Nodes::Desc.new(@current_resource, n.content)
+      end
     end
 
     def parse_metadata(hash)
