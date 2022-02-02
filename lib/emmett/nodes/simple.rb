@@ -12,6 +12,10 @@ module Emmett
       def reset_cache(time)
         @ts = time
       end
+
+      def leaf?
+        false
+      end
     end
   end
 end

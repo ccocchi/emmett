@@ -27,9 +27,8 @@ module Emmett
       end
 
       def visit_Resource(n)
-        @resource = n
         desc = n.desc
-        output = Render.section("#{n.name}-#{desc.name}", desc.content, "", n.name)
+        output = Render.section(desc.anchor, desc.content, "", n.name)
 
         <<~HTML
           <section class="head-section">
@@ -37,8 +36,6 @@ module Emmett
             #{visit_Array(n.children)}
           </section>
         HTML
-      ensure
-        @resource = nil
       end
 
       def visit_Section(n)
@@ -46,8 +43,7 @@ module Emmett
       end
 
       def visit_Leaf(n)
-        name = @resource ? "#{@resource.name}-#{n.name}" : n.name
-        Render.section(name, n.content, n.example)
+        Render.section(n.anchor, n.content, n.example)
       end
     end
   end

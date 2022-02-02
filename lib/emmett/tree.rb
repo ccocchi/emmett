@@ -23,13 +23,25 @@ module Emmett
       @config       = config
       @content_dir  = @config.content_dir
       @files        = @config.content
+      @timestamp    = File.mtime(@content_dir)
 
       build_tree
     end
 
     def refresh
-      visitors = [Visitors::Reader.new, Visitors::Normalizer.new]
-      visitors.each { |v| self.class.tree.accept(v) }
+      if @config.changed?
+        @files = @config.content
+        build_tree
+      elsif File.mtime(@content_dir) > @timestamp
+        build_tree
+      end
+
+      # Refresh each leaf's content if it was updated
+      self.class.tree.accept(Visitors::Reader.new)
+
+      # TODO: normalizing each time is overkill but we need to ensure that updated
+      # leafs correctly impact its parent resource
+      self.class.tree.accept(Visitors::Normalizer.new)
     end
 
     def menu_output
@@ -79,7 +91,7 @@ module Emmett
     #
     def class_from_type(type)
       case type
-      when "resources_group" then Nodes::ResourcesGroup
+      when "resources_group", "group" then Nodes::ResourcesGroup
       when "resource" then Nodes::Resource
       when "section" then Nodes::Section
       end

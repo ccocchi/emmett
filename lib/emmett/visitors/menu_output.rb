@@ -32,17 +32,14 @@ module Emmett
       end
 
       def visit_Resource(n)
-        resource_name = n.name.tr('_', ' ').split.map!(&:capitalize).join(' ')
-        @resource = n
+        human_name = n.name.tr('_', ' ').split.map!(&:capitalize).join(' ')
 
         <<~HTML
           <li data-anchor="#{n.name}">
-            <a class="expandable" href="#{anchor(n.desc)}"><span>#{resource_name}</span></a>
+            <a class="expandable" href="##{n.desc.anchor}"><span>#{human_name}</span></a>
             <ul>#{visit_Array(n.children)}</ul>
           </li>
         HTML
-      ensure
-        @resource = nil
       end
 
       def visit_Section(n)
@@ -55,12 +52,8 @@ module Emmett
       end
 
       def visit_Leaf(n)
-        name = n.metadata&.[]("menu_title") || n.name
-        %{<li><a href="#{anchor(n)}"><span>#{name}</span></a></li>}
-      end
-
-      def anchor(n)
-        @resource ? "##{@resource.name}-#{n.name}" : "##{n.name}"
+        human_name = n.metadata&.fetch("menu_title", n.name)
+        %{<li><a href="##{n.anchor}"><span>#{human_name}</span></a></li>}
       end
     end
   end

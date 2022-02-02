@@ -4,21 +4,6 @@ module Emmett::Visitors
   class Reader
     include Core
 
-    attr_reader :current_resource
-
-    def initialize
-      @current_resource = nil
-    end
-
-    private
-
-    def visit_Resource(n)
-      @current_resource = n
-      super
-    ensure
-      @current_resource = nil
-    end
-
     def visit_Leaf(n)
       path = n.path
       time = File.mtime(path)
@@ -36,15 +21,10 @@ module Emmett::Visitors
 
       n.content, n.example = ::Emmett::ContentParser.parse(raw_content)
       n.reset_cache(file.mtime)
-      n.resource = @current_resource
-
-      if @current_resource && n.name == "desc"
-        @current_resource.desc = Nodes::Desc.new(@current_resource, n.content)
-      end
     end
 
     def parse_metadata(hash)
-      hash.slice('id', 'menu_title', 'path', 'method')
+      hash.slice('menu_title', 'path', 'method')
     end
   end
 end

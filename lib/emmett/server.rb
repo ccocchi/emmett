@@ -23,11 +23,10 @@ module Emmett
 
       r.root do
         @config = Emmett.config
+        @config.reload
+
         @tree = Emmett.tree
         @tree.refresh
-
-        # @tree.menu_output
-        # @tree.output
 
         view('index')
       end

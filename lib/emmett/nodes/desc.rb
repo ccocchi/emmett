@@ -11,6 +11,10 @@ module Emmett
       def name
         "desc"
       end
+
+      def anchor
+        "#{resource.name}-desc"
+      end
     end
   end
 end

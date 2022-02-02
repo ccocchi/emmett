@@ -3,8 +3,10 @@ require 'yaml'
 module Emmett
   class Config
     def initialize(config_path)
-      @path     = config_path
-      @changed  = false
+      @path = config_path
+      @changed = false
+      @raw = nil
+      @ts = 0
 
       load
     end
@@ -14,7 +16,6 @@ module Emmett
     end
 
     def reload
-      @changed = false
       tm = File.mtime(@path)
       load if tm > @ts
       self
@@ -34,8 +35,11 @@ module Emmett
     private
 
     def load
-      file = File.open(@path)
-      @raw = YAML.load(file.read)
+      file  = File.open(@path)
+      raw   = YAML.load(file.read)
+
+      @changed = raw["content"] != @raw["content"] if @raw
+      @raw = raw
       @ts = file.mtime
     end
   end
