@@ -15,8 +15,16 @@ module Emmett
         metadata["path"].include?("/:id/")
       end
 
+      def endpoint?
+        metadata&.key?("path") && metadata.key?("method")
+      end
+
       def method
         metadata["method"]
+      end
+
+      def endpoint_path
+        metadata["path"]
       end
     end
   end

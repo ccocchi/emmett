@@ -10,7 +10,7 @@ module Emmett
       end
 
       def visit_Root(n)
-        orphans, rest = n.children.partition { |n| n.is_a?(Nodes::Leaf) }
+        orphans, rest = n.children.partition(&:leaf?)
 
         <<~HTML
           <div class="sidebar-nav-group">

@@ -10,6 +10,38 @@ module Emmett
             #{template.src}
           end
         ERB
+
+        def self.endpoint_signature(n)
+          <<~HTML
+            <div class="endpoint-def">
+              <div class="method method__#{n.method.downcase}">#{n.method.upcase}</div>
+              <div class="path">#{n.endpoint_path}</div>
+            </div>
+          HTML
+        end
+
+        def self.endpoints_summary(endpoints, name: nil)
+          signatures = endpoints.map do |n|
+            <<~HTML
+              <div class="resource-sig">
+                <a href="##{n.anchor}">#{endpoint_signature(n)}</a>
+              </div>
+            HTML
+          end
+
+          title = name ? "#{name} ENDPOINTS" : "ENDPOINTS"
+
+          <<~HTML
+            <div class="section-response">
+              <div class="response-topbar">#{title}</div>
+              <div class="section-endpoints">#{signatures.join}</div>
+            </div>
+          HTML
+        end
+      end
+
+      def initialize
+        @in_section = false
       end
 
       private
@@ -27,12 +59,20 @@ module Emmett
       end
 
       def visit_Resource(n)
+        orphans, sections = n.children.partition(&:leaf?)
+        sections.map! { |n| Render.endpoints_summary(n.children, name: n.name) }
+
+        if orphans.any?
+          orphans.keep_if(&:endpoint?)
+          sections.prepend(Render.endpoints_summary(orphans))
+        end
+
         desc = n.desc
-        output = Render.section(desc.anchor, desc.content, "", n.name)
+        desc_output = Render.section(desc.anchor, desc.content, sections.join, n.name)
 
         <<~HTML
           <section class="head-section">
-            #{output}
+            #{desc_output}
             #{visit_Array(n.children)}
           </section>
         HTML

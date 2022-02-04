@@ -20,6 +20,10 @@ module Emmett::Visitors
       end
 
       n.content, n.example = ::Emmett::ContentParser.parse(raw_content)
+      if n.endpoint?
+        n.example.sub!("RESPONSE", ContentOutput::Render.endpoint_signature(n))
+      end
+
       n.reset_cache(file.mtime)
     end
 

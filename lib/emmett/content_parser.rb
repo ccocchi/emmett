@@ -114,14 +114,10 @@ module Emmett
         @title      = title
       end
 
-      # template = Erubi::Engine.new(File.read(File.expand_path('../src/attributes.erb', __dir__)))
-      # class_eval <<-RUBY
-      #   define_method(:output) { #{template.src} }
-      # RUBY
-
-      def output
-        "ATTRIBUTES"
-      end
+      template = Erubi::Engine.new(File.read('src/views/attributes.erb'))
+      class_eval <<-RUBY
+        define_method(:output) { #{template.src} }
+      RUBY
 
       def to_html(text)
         @@renderer.render(text) if text
