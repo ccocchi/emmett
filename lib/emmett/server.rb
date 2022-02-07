@@ -1,6 +1,7 @@
 require "roda"
 require "tilt"
 require "tilt/erubi"
+require "active_support/inflector"
 
 module Emmett
   class Server < Roda

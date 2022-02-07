@@ -31,12 +31,24 @@ module Emmett
       def heuristic_sort(nodes)
         nodes
           .map! { |n| [n, heuristic_score(n)] }
-          .sort! { |(_, s1), (_, s2)| s1 <=> s2 }
+          .sort! { |(n1, s1), (n2, s2)|
+            o = s1 <=> s2
+            o == 0 ? n1.endpoint_path.length <=> n2.endpoint_path.length : o
+          }
           .map!(&:first)
       end
 
       def heuristic_score(node)
-        METHOD_SCORE[node.method] + (node.member? ? 10 : 0)
+        path  = node.endpoint_path
+        score = METHOD_SCORE[node.method]
+
+        idx = path.index(":id")
+        idx ||= path.index(":#{node.resource.param}") if node.resource
+
+        score += 5 if idx && node.method != "POST"
+        score += 5 if idx && path.length > idx + 4
+
+        score
       end
     end
   end

@@ -11,10 +11,6 @@ module Emmett
         true
       end
 
-      def member?
-        metadata["path"].include?("/:id/")
-      end
-
       def endpoint?
         metadata&.key?("path") && metadata.key?("method")
       end

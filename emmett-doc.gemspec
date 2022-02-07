@@ -34,4 +34,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'sassc'
   spec.add_dependency 'rouge'
   spec.add_dependency 'redcarpet'
+  spec.add_dependency "activesupport"
 end
